@@ -51,7 +51,7 @@ export default function LamborghiniPage() {
     car.nama_produk.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Pagination logic
+  // Pagination logi
   const totalPages = Math.ceil(filteredCars.length / carsPerPage);
   const startIndex = (currentPage - 1) * carsPerPage;
   const endIndex = startIndex + carsPerPage;
