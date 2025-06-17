@@ -1,13 +1,11 @@
 import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
-import { Transaction, Customer, Product } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
-type TransactionWithCustomerProduct = Transaction & {
-  customer: Customer;
-  product: Product;
-};
+type TransactionWithCustomerProduct = Prisma.TransactionGetPayload<{
+  include: { customer: true; product: true };
+}>;
 
-// Fungsi untuk format ke mata uang Rupiah
 function formatRupiah(angka: number): string {
   return new Intl.NumberFormat("id-ID", {
     style: "currency",
@@ -17,10 +15,8 @@ function formatRupiah(angka: number): string {
 }
 
 export default async function RecentTransactions() {
-  // Simulasi delay loading 1 detik
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Ambil 5 transaksi terbaru beserta relasi customer dan product
   const transaksiTerbaru: TransactionWithCustomerProduct[] =
     await prisma.transaction.findMany({
       orderBy: { tanggal: "desc" },
