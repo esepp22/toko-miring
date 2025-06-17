@@ -15,10 +15,11 @@ function formatRupiah(angka: number): string {
 }
 
 export default async function RecentTransactions() {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  // Hindari delay saat query, lebih baik pakai skeleton loading
+  let transaksiTerbaru: TransactionWithCustomerProduct[] = [];
 
-  const transaksiTerbaru: TransactionWithCustomerProduct[] =
-    await prisma.transaction.findMany({
+  try {
+    transaksiTerbaru = await prisma.transaction.findMany({
       orderBy: { tanggal: "desc" },
       take: 5,
       include: {
@@ -26,6 +27,10 @@ export default async function RecentTransactions() {
         product: true,
       },
     });
+  } catch (error) {
+    console.error("Gagal mengambil transaksi terbaru:", error);
+    // Optional: tampilkan error UI atau fallback kosong
+  }
 
   return (
     <div className="bg-white shadow-md rounded-lg p-4">
@@ -40,18 +45,30 @@ export default async function RecentTransactions() {
           </tr>
         </thead>
         <tbody>
-          {transaksiTerbaru.map((transaksi) => (
-            <tr key={transaksi.id_transaksi} className="border-t">
-              <td className="px-4 py-2">
-                {format(new Date(transaksi.tanggal), "dd MMM yyyy")}
-              </td>
-              <td className="px-4 py-2">{transaksi.customer.nama_customer}</td>
-              <td className="px-4 py-2">{transaksi.product.nama_produk}</td>
-              <td className="px-4 py-2">
-                {formatRupiah(transaksi.total_harga)}
+          {transaksiTerbaru.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="text-center py-4 text-gray-500">
+                Tidak ada transaksi ditemukan.
               </td>
             </tr>
-          ))}
+          ) : (
+            transaksiTerbaru.map((transaksi) => (
+              <tr key={transaksi.id_transaksi} className="border-t">
+                <td className="px-4 py-2">
+                  {format(new Date(transaksi.tanggal), "dd MMM yyyy")}
+                </td>
+                <td className="px-4 py-2">
+                  {transaksi.customer?.nama_customer ?? "-"}
+                </td>
+                <td className="px-4 py-2">
+                  {transaksi.product?.nama_produk ?? "-"}
+                </td>
+                <td className="px-4 py-2">
+                  {formatRupiah(transaksi.total_harga)}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
