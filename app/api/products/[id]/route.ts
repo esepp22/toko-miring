@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
-// GET transaksi berdasarkan I
+// Route handler untuk GET produk berdasarkan ID
+// GET produk berdasarkan ID
 export async function GET(
-  _req: Request,
+  req: Request,
   context: { params: { id: string } }
 ) {
   const { id } = context.params;
@@ -14,26 +15,29 @@ export async function GET(
   }
 
   try {
-    const transaksi = await prisma.Transaction.findUnique({
-      where: { id_transaksi: idNumber },
-      include: {
-        customer: true,
-        product: true,
+    const product = await prisma.product.findUnique({
+      where: { id_produk: idNumber },
+      select: {
+        nama_produk: true,
+        harga: true,
       },
     });
 
-    if (!transaksi) {
-      return NextResponse.json({ error: "Transaksi not found" }, { status: 404 });
+    if (!product) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return NextResponse.json(transaksi);
+    return NextResponse.json(product);
   } catch (error) {
-    console.error("Error fetching transaksi:", error);
-    return NextResponse.json({ error: "Failed to fetch transaksi" }, { status: 500 });
+    console.error("Error fetching product:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch product" },
+      { status: 500 }
+    );
   }
 }
 
-// PUT untuk update transaksi berdasarkan ID
+// PUT untuk update produk
 export async function PUT(
   req: Request,
   context: { params: { id: string } }
@@ -46,28 +50,31 @@ export async function PUT(
   }
 
   try {
-    const body = await req.json();
-    const { status, total_harga, tanggal } = body;
+    const data = await req.json();
 
-    const updatedTransaksi = await prisma.transaksi.update({
-      where: { id_transaksi: idNumber },
+    const updated = await prisma.product.update({
+      where: { id_produk: idNumber },
       data: {
-        total_harga,
-        tanggal: tanggal ? new Date(tanggal) : undefined,
-        // tambahkan kolom lain jika perlu
+        nama_produk: data.nama_produk,
+        harga: data.harga,
+        stok: data.stok,
+        status: data.status,
       },
     });
 
-    return NextResponse.json(updatedTransaksi, { status: 200 });
+    return NextResponse.json(updated);
   } catch (error) {
-    console.error("Error updating transaksi:", error);
-    return NextResponse.json({ error: "Failed to update transaksi" }, { status: 500 });
+    console.error("Error updating product:", error);
+    return NextResponse.json(
+      { error: "Failed to update product" },
+      { status: 500 }
+    );
   }
 }
 
-// DELETE untuk menghapus transaksi berdasarkan ID
+// DELETE untuk menghapus produk
 export async function DELETE(
-  _req: Request,
+  req: Request,
   context: { params: { id: string } }
 ) {
   const { id } = context.params;
@@ -78,13 +85,16 @@ export async function DELETE(
   }
 
   try {
-    await prisma.transaksi.delete({
-      where: { id_transaksi: idNumber },
+    await prisma.product.delete({
+      where: { id_produk: idNumber },
     });
 
-    return NextResponse.json({ message: "Transaksi deleted successfully" });
+    return NextResponse.json({ message: "Product deleted successfully" });
   } catch (error) {
-    console.error("Error deleting transaksi:", error);
-    return NextResponse.json({ error: "Failed to delete transaksi" }, { status: 500 });
+    console.error("Error deleting product:", error);
+    return NextResponse.json(
+      { error: "Failed to delete product" },
+      { status: 500 }
+    );
   }
 }
