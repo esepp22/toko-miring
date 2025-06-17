@@ -4,7 +4,8 @@
     "build": "next build",
     "dev": "next dev --turbopack",
     "start": "next start",
-    "seed": "tsx prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
