@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
 interface Product {
   nama_produk: string;
   harga: number;
 }
 
-export default function FerrariDetail() {
+function FerrariDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -23,9 +23,8 @@ export default function FerrariDetail() {
 
       try {
         const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("Failed to fetch");
-        }
+        if (!res.ok) throw new Error("Failed to fetch");
+
         const data = await res.json();
         setProduct(data);
       } catch (error) {
@@ -75,7 +74,6 @@ export default function FerrariDetail() {
             {loading ? "" : product ? `Rp ${product.harga.toLocaleString()}` : ""}
           </p>
 
-          {/* Static Section */}
           <div className="h-px bg-gray-200 my-6"></div>
 
           <h2 className="text-2xl font-semibold mb-4">Specifications</h2>
@@ -108,5 +106,13 @@ export default function FerrariDetail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading detail...</div>}>
+      <FerrariDetailContent />
+    </Suspense>
   );
 }

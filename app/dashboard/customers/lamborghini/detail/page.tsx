@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
 interface Product {
   nama_produk: string;
   harga: number;
 }
 
-export default function LamborghiniDetail() {
+function LamborghiniDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -23,9 +23,8 @@ export default function LamborghiniDetail() {
 
       try {
         const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
-        if (!res.ok) {
-          throw new Error("Failed to fetch");
-        }
+        if (!res.ok) throw new Error("Failed to fetch product");
+
         const data = await res.json();
         setProduct(data);
       } catch (error) {
@@ -72,7 +71,7 @@ export default function LamborghiniDetail() {
             {loading ? "Loading..." : product?.nama_produk || "Not Found"}
           </h1>
           <p className="text-2xl text-green-600 mb-8">
-            {loading ? "" : product ? `Rp ${product.harga.toLocaleString()}` : ""}
+            {!loading && product ? `Rp ${product.harga.toLocaleString()}` : ""}
           </p>
 
           <div className="h-px bg-gray-200 my-6"></div>
@@ -85,7 +84,7 @@ export default function LamborghiniDetail() {
               { label: "0-60 mph", value: "2.8 seconds" },
               { label: "Top Speed", value: "217 mph" },
               { label: "Transmission", value: "7-speed ISR" },
-              { label: "Drive Type", value: "All-Wheel Drive" }
+              { label: "Drive Type", value: "All-Wheel Drive" },
             ].map((spec, index) => (
               <div key={index}>
                 <p className="text-sm text-gray-500">{spec.label}</p>
@@ -107,5 +106,13 @@ export default function LamborghiniDetail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading detail...</div>}>
+      <LamborghiniDetailContent />
+    </Suspense>
   );
 }

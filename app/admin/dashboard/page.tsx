@@ -1,4 +1,6 @@
 // app/admin/dashboard/page.tsx
+export const dynamic = "force-dynamic";
+
 import { Suspense } from "react";
 import SkeletonCard from "../components/SkeletonCard";
 import SkeletonTable from "../components/SkeletonTable";

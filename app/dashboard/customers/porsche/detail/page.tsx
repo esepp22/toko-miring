@@ -2,14 +2,14 @@
 
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 
 interface Product {
   nama_produk: string;
   harga: number;
 }
 
-export default function PorscheDetail() {
+function PorscheDetailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -24,6 +24,7 @@ export default function PorscheDetail() {
       try {
         const res = await fetch(`/api/products/${id}`, { cache: "no-store" });
         if (!res.ok) throw new Error("Failed to fetch product");
+
         const data = await res.json();
         setProduct(data);
       } catch (error) {
@@ -45,11 +46,7 @@ export default function PorscheDetail() {
         className="absolute top-4 left-4 z-10 flex items-center gap-1 text-blue-600 hover:text-blue-800 hover:underline"
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-          <path
-            fillRule="evenodd"
-            d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z"
-            clipRule="evenodd"
-          />
+          <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
         </svg>
         Back
       </button>
@@ -74,7 +71,7 @@ export default function PorscheDetail() {
             {loading ? "Loading..." : product?.nama_produk || "Not Found"}
           </h1>
           <p className="text-2xl text-green-600 mb-8">
-            {loading ? "" : product ? `Rp ${product.harga.toLocaleString()}` : ""}
+            {!loading && product ? `Rp ${product.harga.toLocaleString()}` : ""}
           </p>
 
           <div className="h-px bg-gray-200 my-6"></div>
@@ -109,5 +106,13 @@ export default function PorscheDetail() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Page() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading detail...</div>}>
+      <PorscheDetailContent />
+    </Suspense>
   );
 }
