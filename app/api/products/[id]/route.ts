@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET transaksi berdasarkan ID
+// GET transaksi berdasarkan I
 export async function GET(
   _req: Request,
   context: { params: { id: string } }
