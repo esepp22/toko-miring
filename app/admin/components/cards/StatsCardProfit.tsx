@@ -7,7 +7,7 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 export default async function StatsCardProfit() {
   await delay(5000); // Bisa 0, untuk instant
 
-  const profit = await prisma.transaksi.aggregate({
+  const profit = await prisma.transaction.aggregate({
     _sum: {
       total_harga: true,
     },

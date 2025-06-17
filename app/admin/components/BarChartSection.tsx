@@ -16,7 +16,7 @@ type TransactionWithProduct = {
 export default async function BarChartSection() {
   await new Promise((resolve) => setTimeout(resolve, 5000)); // simulasi delay
 
-  const data = await prisma.transaksi.findMany({
+  const data = await prisma.Transaction.findMany({
     orderBy: { tanggal: "desc" },
     take: 7,
     include: { product: true },

@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { format } from "date-fns";
-import { Transaksi, Customer, Product } from "@prisma/client";
+import { Transaction, Customer, Product } from "@prisma/client";
 
-type TransaksiWithCustomerProduct = Transaksi & {
+type TransactionWithCustomerProduct = Transaction & {
   customer: Customer;
   product: Product;
 };
@@ -21,8 +21,8 @@ export default async function RecentTransactions() {
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
   // Ambil 5 transaksi terbaru beserta relasi customer dan product
-  const transaksiTerbaru: TransaksiWithCustomerProduct[] =
-    await prisma.transaksi.findMany({
+  const transaksiTerbaru: TransactionWithCustomerProduct[] =
+    await prisma.transaction.findMany({
       orderBy: { tanggal: "desc" },
       take: 5,
       include: {
@@ -51,7 +51,9 @@ export default async function RecentTransactions() {
               </td>
               <td className="px-4 py-2">{transaksi.customer.nama_customer}</td>
               <td className="px-4 py-2">{transaksi.product.nama_produk}</td>
-              <td className="px-4 py-2">{formatRupiah(transaksi.total_harga)}</td>
+              <td className="px-4 py-2">
+                {formatRupiah(transaksi.total_harga)}
+              </td>
             </tr>
           ))}
         </tbody>

@@ -12,7 +12,7 @@ model Customer {
   nama_customer String
   email         String        @unique
   alamat        String?
-  transactions  Transaksi[]
+  transactions  Transaction[]
 }
 
 model Product {
@@ -23,10 +23,10 @@ model Product {
   foto         String?
   deskripsi    String?
   status       String        @default("Tersedia")
-  transactions Transaksi[]
+  transactions Transaction[]
 }
 
-model Transaksi {
+model Transaction {
   id_transaksi Int       @id @default(autoincrement())
   id_produk    Int
   id_customer  Int

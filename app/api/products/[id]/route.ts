@@ -14,7 +14,7 @@ export async function GET(
   }
 
   try {
-    const transaksi = await prisma.transaksi.findUnique({
+    const transaksi = await prisma.Transaction.findUnique({
       where: { id_transaksi: idNumber },
       include: {
         customer: true,
