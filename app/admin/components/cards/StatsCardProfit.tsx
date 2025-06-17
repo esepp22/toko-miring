@@ -7,7 +7,7 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 export default async function StatsCardProfit() {
   await delay(5000); // Bisa 0, untuk instant
 
-  const profit = await prisma.transaction.aggregate({
+  const profit = await prisma.transaksi.aggregate({
     _sum: {
       total_harga: true,
     },
@@ -17,7 +17,7 @@ export default async function StatsCardProfit() {
     <StatsCard
       title="Total Profit"
       value={`Rp ${profit._sum.total_harga?.toLocaleString("id-ID") || "0"}`}
-      percentage="4.35%"
+      percentage="4.35%" // Optional: bisa diganti dinamis
       isPositive={true}
     />
   );

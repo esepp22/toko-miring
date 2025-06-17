@@ -5,7 +5,7 @@ const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 export default async function StatsCardTopProduct() {
     await delay(5000); // Bisa 0, untuk instant
 
-  const topSelling = await prisma.transaction.groupBy({
+  const topSelling = await prisma.transaksi.groupBy({
     by: ["id_produk"],
     _count: { id_transaksi: true },
     orderBy: {

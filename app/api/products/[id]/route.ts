@@ -1,11 +1,10 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-// Route handler untuk GET produk berdasarkan ID
-// GET produk berdasarkan ID
+// GET transaksi berdasarkan ID
 export async function GET(
-  req: Request,
-  context: any
+  _req: Request,
+  context: { params: { id: string } }
 ) {
   const { id } = context.params;
   const idNumber = parseInt(id);
@@ -15,32 +14,29 @@ export async function GET(
   }
 
   try {
-    const product = await prisma.product.findUnique({
-      where: { id_produk: idNumber },
-      select: {
-        nama_produk: true,
-        harga: true,
+    const transaksi = await prisma.transaksi.findUnique({
+      where: { id_transaksi: idNumber },
+      include: {
+        customer: true,
+        product: true,
       },
     });
 
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    if (!transaksi) {
+      return NextResponse.json({ error: "Transaksi not found" }, { status: 404 });
     }
 
-    return NextResponse.json(product);
+    return NextResponse.json(transaksi);
   } catch (error) {
-    console.error("Error fetching product:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch product" },
-      { status: 500 }
-    );
+    console.error("Error fetching transaksi:", error);
+    return NextResponse.json({ error: "Failed to fetch transaksi" }, { status: 500 });
   }
 }
 
-// PUT untuk update produk
+// PUT untuk update transaksi berdasarkan ID
 export async function PUT(
   req: Request,
-  context: any
+  context: { params: { id: string } }
 ) {
   const { id } = context.params;
   const idNumber = parseInt(id);
@@ -50,32 +46,29 @@ export async function PUT(
   }
 
   try {
-    const data = await req.json();
+    const body = await req.json();
+    const { status, total_harga, tanggal } = body;
 
-    const updated = await prisma.product.update({
-      where: { id_produk: idNumber },
+    const updatedTransaksi = await prisma.transaksi.update({
+      where: { id_transaksi: idNumber },
       data: {
-        nama_produk: data.nama_produk,
-        harga: data.harga,
-        stok: data.stok,
-        status: data.status,
+        total_harga,
+        tanggal: tanggal ? new Date(tanggal) : undefined,
+        // tambahkan kolom lain jika perlu
       },
     });
 
-    return NextResponse.json(updated);
+    return NextResponse.json(updatedTransaksi, { status: 200 });
   } catch (error) {
-    console.error("Error updating product:", error);
-    return NextResponse.json(
-      { error: "Failed to update product" },
-      { status: 500 }
-    );
+    console.error("Error updating transaksi:", error);
+    return NextResponse.json({ error: "Failed to update transaksi" }, { status: 500 });
   }
 }
 
-// DELETE untuk menghapus produk
+// DELETE untuk menghapus transaksi berdasarkan ID
 export async function DELETE(
-  req: Request,
-  context: any
+  _req: Request,
+  context: { params: { id: string } }
 ) {
   const { id } = context.params;
   const idNumber = parseInt(id);
@@ -85,16 +78,13 @@ export async function DELETE(
   }
 
   try {
-    await prisma.product.delete({
-      where: { id_produk: idNumber },
+    await prisma.transaksi.delete({
+      where: { id_transaksi: idNumber },
     });
 
-    return NextResponse.json({ message: "Product deleted successfully" });
+    return NextResponse.json({ message: "Transaksi deleted successfully" });
   } catch (error) {
-    console.error("Error deleting product:", error);
-    return NextResponse.json(
-      { error: "Failed to delete product" },
-      { status: 500 }
-    );
+    console.error("Error deleting transaksi:", error);
+    return NextResponse.json({ error: "Failed to delete transaksi" }, { status: 500 });
   }
 }
