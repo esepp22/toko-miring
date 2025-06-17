@@ -15,7 +15,7 @@ dan berkualitas, Toko Miring menjadi destinasi utama bagi para pecinta mobil spo
 
 Link Github : https://github.com/esepp22/toko-miring.git
 
-LInk Deploy : https://toko-miring-r8fh.vercel.app/
+LInk Deploy : https://toko-miring-irnh.vercel.app/
 Deployment : toko-miring-r8fh-55wwae33h-esepp22s-projects.vercel.app
 
 Bagian yang sudah dikerjakan tiap anggota : 
